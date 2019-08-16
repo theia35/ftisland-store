@@ -1,6 +1,6 @@
 <template>
   <div class="adminStore">
-    <router-link :to="'/add-product'">新增商品</router-link :to="/">
+    <router-link :to="'/add-product'">新增商品</router-link>
     <div class="product-list">
     0件商品
     <div class="product-item">

@@ -19,8 +19,8 @@ export default new Router({
     },
     {
       path: '/add-product',
-      name: 'ProductAdd',
-      component: () => import('@/pages/ProductAdd.vue')
+      name: 'AddProduct',
+      component: () => import('@/pages/AddProduct.vue')
     }
 
   ]

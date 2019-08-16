@@ -1,5 +1,5 @@
 <template>
-  <div class="ProductAdd">
+  <div class="AddProduct">
     <h2>新增商品</h2>
       <div class="help-form">
         <div class="field">
@@ -52,7 +52,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'ProductAdd',
+  name: 'AddProduct',
   components: {
     FileUpload: () => import('@/components/FileUpload.vue'),
   },
