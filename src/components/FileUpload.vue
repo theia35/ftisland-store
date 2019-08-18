@@ -7,7 +7,7 @@
         <progress class="progress is-primary" :value="progress" max="100" v-show="progressShow">{{ progress }}</progress>
       </div>
     </div>
-    <input class="fileInput" style="display: none" type="file" :ref="inputId" @change="onFileChange( $event, imgId, 0)" :accept="uploadType" >
+    <input class="fileInput" style="display: none" type="file" :ref="inputId" @change="onFileChange( $event, imgId, 0)" :accept="uploadType" multiple>
   </div>
 </template>
 
@@ -65,14 +65,14 @@ export default {
         this.$refs[this.imgId].style.backgroundImage = '';
         this.progress = '0';
         let self = this;
-        if (this.file.size > 10*1024*1024) {
-          alert('File upload 10MB limit');
-          return;
-        }
+        // if (this.file.size > 10*1024*1024) {
+        //   alert('File upload 10MB limit');
+        //   return;
+        // }
         this.progressShow = true;
         this.cloneUploadStatus = 'uploading';
-        let storageRef = firebaseObj.storage.ref(new Date().getTime() + this.file.name);
-        storageRef.put(this.file).then(function(snapshot) {
+        let storageRef = firebaseObj.storage.ref(new Date().getTime() + this.file.name).put(this.file);
+        storageRef.on('state_changed', function(snapshot){
           if (self.file) {
             let reader = new FileReader();
             reader.onload = function (e) {
@@ -86,6 +86,24 @@ export default {
             }
             reader.readAsDataURL(self.file);
           }
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          // switch (snapshot.state) {
+          //   case firebaseObj.storage.TaskState.PAUSED: // or 'paused'
+          //     console.log('Upload is paused');
+          //     break;
+          //   case firebaseObj.storage.TaskState.RUNNING: // or 'running'
+          //     console.log('Upload is running');
+          //     break;
+          // }
+        }, function(error) {
+          // Handle unsuccessful uploads
+        }, function() {
+          // Handle successful uploads on complete
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          storageRef.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+          });
         });
         // storageRef.child(this.file.name).put(this.file).then(function(snapshot) {
         //   console.log('Uploaded a blob or file!');
