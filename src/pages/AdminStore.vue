@@ -3,10 +3,14 @@
     <router-link :to="'/add-product'">新增商品</router-link>
     <div class="product-list">
     0件商品
-    <div class="product-item">
-      <div class="product-name">{{productList[0].name}}</div>
-      <img class="product-img" :src="productList[0].img" alt="">
-      <div class="product-price">${{productList[0].price}}</div>
+    <div class="product-item columns is-multiline">
+      <div v-for="item in productList" :key="item.id" class="column is-one-quarter">
+        <img class="product-img" :src="item.url">
+        <div class="product-name">{{item.productName}}</div>
+        <div class="product-yxdname">養心註解:{{item.yxdname}}</div>
+        <div class="product-price">${{item.price}}</div>
+        <div class="product-note">備註:{{item.note}}</div>
+      </div>
     </div>
     </div>
   </div>

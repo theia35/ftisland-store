@@ -19,8 +19,8 @@ export default {
   props: ['uploadType', 'inputId', 'imgId', 'thumbId', 'uploadStatus'],
   data () {
     return {
-      file: '',
-      fileList: [],
+      file: [],
+      fileUrlList: [],
       policy: '',
       status: this.uploadStatus,
       thumbText: '',
@@ -54,8 +54,28 @@ export default {
       this.$refs[this.imgId].style.backgroundImage = '';
       this.$refs[this.inputId].value = '';
     },
+    putStorageFile (item){
+      let self = this;
+      let storageRef = firebaseObj.storage.ref(new Date().getTime() + item.name).put(item);
+      
+      storageRef.on('state_changed', (snapshot) => {
+        self.progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      }, (error) => {
+        // Handle unsuccessful uploads
+      }, () => {
+        storageRef.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+          console.log('File available at', downloadURL);
+          self.fileUrlList.push(downloadURL)
+          self.$emit('update:fileUrlList', self.fileUrlList)
+        });
+      });
+      return storageRef;
+    },
     async onFileChange (e, item, index) {
-      this.file = e.target.files[0];
+      for(let i=0; i < e.target.files.length; i++){
+        this.file.push(e.target.files[i]);
+      }
+      // this.file = e.target.files;
       if (!this.file) {
         this.initialUploadedFile();
         this.progressShow = false;
@@ -65,49 +85,18 @@ export default {
         this.$refs[this.imgId].style.backgroundImage = '';
         this.progress = '0';
         let self = this;
-        // if (this.file.size > 10*1024*1024) {
-        //   alert('File upload 10MB limit');
-        //   return;
-        // }
         this.progressShow = true;
         this.cloneUploadStatus = 'uploading';
-        let storageRef = firebaseObj.storage.ref(new Date().getTime() + this.file.name).put(this.file);
-        storageRef.on('state_changed', function(snapshot){
-          if (self.file) {
-            let reader = new FileReader();
-            reader.onload = function (e) {
-              if(item !== "photo4"){
-                self.$refs[item].style.backgroundImage = "url(" + e.target.result + ")";
-              }
-              self.cloneUploadStatus = 'uploaded';
-              self.progressShow = false;
-              self.progress = 0;
-              self.$emit('progressShow', false);
-            }
-            reader.readAsDataURL(self.file);
-          }
-          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
-          // switch (snapshot.state) {
-          //   case firebaseObj.storage.TaskState.PAUSED: // or 'paused'
-          //     console.log('Upload is paused');
-          //     break;
-          //   case firebaseObj.storage.TaskState.RUNNING: // or 'running'
-          //     console.log('Upload is running');
-          //     break;
-          // }
-        }, function(error) {
-          // Handle unsuccessful uploads
-        }, function() {
-          // Handle successful uploads on complete
-          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-          storageRef.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-            console.log('File available at', downloadURL);
-          });
+        Promise.all(
+          // Array of "Promises"
+          this.file.map(item => this.putStorageFile(item))
+        )
+        .then((url) => {
+          console.log(`All success`)
+        })
+        .catch((error) => {
+          console.log(`Some failed: `, error.message)
         });
-        // storageRef.child(this.file.name).put(this.file).then(function(snapshot) {
-        //   console.log('Uploaded a blob or file!');
-        // });
       }
     }
   }

@@ -1,5 +1,10 @@
 # FTIsland store changelog
 
+## 2019/08/25 v1.0.5
+1. dynamic dispaly uploaded multi file.
+2. submit new product info to DB.
+3. display product list.
+
 ## 2019/08/18 v1.0.4
 1. add multi file upload.
 
