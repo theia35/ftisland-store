@@ -1,5 +1,8 @@
 # FTIsland store changelog
 
+## 2019/09/30 v1.0.6
+1. add new test page 'get twpost mail status'.
+
 ## 2019/08/25 v1.0.5
 1. dynamic dispaly uploaded multi file.
 2. submit new product info to DB.

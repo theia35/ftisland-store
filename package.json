@@ -9,7 +9,7 @@
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src test/e2e/specs",
     "build": "NODE_ENV=production vue-cli-service build",
-    "buildwin": "vue-cli-service build"
+    "buildwin": "vue-cli-service build firebase deploy"
   },
   "dependencies": {
     "@google-cloud/storage": "^3.1.0",
